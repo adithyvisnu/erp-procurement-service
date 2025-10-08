@@ -12,6 +12,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 type GormOption func(*gorm.Config)
@@ -20,16 +21,19 @@ func InitPostgre(ctx context.Context, config env.ENV, options ...GormOption) (*g
 	cfg := &gorm.Config{
 		Logger:      logger.Default.LogMode(logger.Info),
 		PrepareStmt: true,
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix: "procurement.",
+		},
 	}
 	for _, o := range options {
 		o(cfg)
 	}
 
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
-		config.PostgreHost, config.PostgreUser, config.PostgrePassword, config.PostgreDatabaseName, config.PostgrePort, config.PostgreSSLMode, config.PostgreTimeZone,
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s search_path=%s",
+		config.PostgreHost, config.PostgreUser, config.PostgrePassword, config.PostgreDatabaseName, config.PostgrePort, config.PostgreSSLMode, config.PostgreTimeZone, config.PostgreSchema,
 	)
-	fmt.Println(dsn)
+
 	var gdb *gorm.DB
 	op := func() error {
 		db, err := gorm.Open(postgres.Open(dsn), cfg)

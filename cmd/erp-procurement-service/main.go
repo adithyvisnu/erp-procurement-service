@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"runtime/debug"
 	"time"
@@ -19,8 +18,8 @@ func main() {
 	defer func() {
 		cancel()
 		if r := recover(); r != nil {
-			fmt.Println("Failed to start user service:", r)
-			fmt.Printf("Stack trace: \n%s\n", debug.Stack())
+			log.Println("Failed to start user service:", r)
+			log.Printf("Stack trace: \n%s\n", debug.Stack())
 		}
 	}()
 
